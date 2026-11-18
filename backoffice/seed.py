@@ -62,5 +62,5 @@ if __name__ == "__main__":
     engine = make_engine(os.environ.get("DATABASE_URL", "sqlite:///hbntory.db"))
     create_tables(engine)
     
-    with sessionmaker(engine)() as session:
+    with sessionmaker(engine).begin() as session:
         seed(session, password)
