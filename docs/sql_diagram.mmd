@@ -1,0 +1,26 @@
+erDiagram
+    BRANCHES |o--o{ USERS : "employ"
+    BRANCHES ||--o{ STOCK : "own"
+
+    BRANCHES {
+        INTEGER id PK
+        TEXT name UK
+    }
+
+    USERS {
+        INTERGER id PK
+        TEXT username UK
+        TEXT password_hash
+        TEXT role "admin or common"
+        INTEGER branch_id FK "NULL if admin"
+        INTEGER is_delete "O or 1"
+        TEXT created_at
+        TEXT updated_at
+    }
+
+    STOCK {
+        INTEGER branch_id PK, FK
+        TEXT product_id PK
+        INTEGER quantity "higher or equal to 0"
+        TEXT updated_at
+    }
