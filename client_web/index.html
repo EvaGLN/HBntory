@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lan="en">
+<meta charset = "utf-8">
+<meta name="viewport" content="width=device-width", initial-scale="1">
+<title>HBntory - Ask about product</title>
+
+<main>
+    <h1>Ask about products and stock</h1>
+
+    <form id="f" autocomplete="off">
+        <label for="q">Your question</label>
+        <input id="q" size="60" maxlength="500", required autofocus placeholder="Which branch has stock of P-001?">
+        <button id="go" type="submit">Ask</button>
+    </form>
+
+    <p id="status" role="status" aria-live="polite"></p>
+    <pre id="answer" tabindex="-1"></pre>
+</main>
+
+<script type="text/javascript" src="client_web/index.js"></script>

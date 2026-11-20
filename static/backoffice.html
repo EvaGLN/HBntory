@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset="utf-8">
+
+<title>HBntory Backoffice</title>
+
+<h1>HBntory Backoffice</h1>
+
+<!--
+Login form allowing users to enter their username and password.
+Submitting it triggers JavaScript to authenticate the user without reloading the page.
+-->
+<form id="login">
+    <input id="u" placeholder="username">
+    <input id="p" type="password" placeholder="password">
+    <button>Login</button>
+</form>
+
+<!-- Empty placeholders dynamically filled by JavaScript:
+"who" displays the logged-in user and branch,
+while "msg" displays error feedback.
+-->
+<p id="who"></p>
+<p id="msg"></p>
+
+<!--
+Main inventory dashboard, hidden by default until a "common" user logs in.
+It lets the user select a product, choose a quantity to add or remove,
+and view the live branch stock list.
+-->
+<div id="stock-ui" hidden>
+    <select id="product"></select>
+    <input id="qty" type="number" value="1">
+    <button id="add">Add</button> <button id="remove">Remove</button>
+    <ul id="stock"></ul>
+</div>
+
+<script type="text/javascript" src="static/backoffice.js"></script>
