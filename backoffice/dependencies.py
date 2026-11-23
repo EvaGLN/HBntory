@@ -11,8 +11,8 @@ def get_database():
     """Open a new database session or reuse the existing one for the current request."""
     if "database" not in g:
         # 'current_app.extensions' is a built-in dictionary on the Flask app to store shared tools.
-        # We grab the 'sessions_factory' tool and call it '()' to create a new database session.
-        g.database = current_app.extensions["sessions_factory"]()
+        # We grab the 'session_factory' tool and call it '()' to create a new database session.
+        g.database = current_app.extensions["session_factory"]()
     return g.database
 
 
