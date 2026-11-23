@@ -12,7 +12,7 @@ import logging
 from typing import Annotated
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
-from product_client import ProductClient, ProductApiError, ProductNotFound
+from products_client import ProductClient, ProductApiError, ProductNotFound
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 log = logging.getLogger("product-mcp")

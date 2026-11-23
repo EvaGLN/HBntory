@@ -12,7 +12,7 @@ def where_is_product(session, product_id):
     rows = session.execute(
         select(Branch.name, Stock.quantity).join(Stock, Stock.branch_id ==
                                                  Branch.id)
-        .where(Stock.product_id == product_id, Stock.quantity > 0).orderby(
+        .where(Stock.product_id == product_id, Stock.quantity > 0).order_by(
             Branch.name)
         )
 
@@ -22,7 +22,7 @@ def where_is_product(session, product_id):
 def branch_stock(session, branch_name):
     """Make a query to know all stocks from a branch"""
 
-    branch = session.scalar(select(Branch).where(Branche.name == branch_name))
+    branch = session.scalar(select(Branch).where(Branch.name == branch_name))
     if branch is None:
         return None
 
@@ -60,12 +60,12 @@ def plan_shopping_list(session, wanted):
 
     single = [b for b in sorted(stock) if all(stock[b].get(p, 0) >= q for p, q
               in wanted.items())]
-    remaining, plan, candidates = dict(wanted), {}, dict[stock]
+    remaining, plan, candidates = dict(wanted), {}, dict(stock)
     while remaining:
         best = max(sorted(candidates), key=lambda b: sum(min(q,
                    candidates[b].get(p, 0)) for p, q in remaining.items()))
         take = {p: min(q, candidates[best].get(p, 0)) for p, q in
-                remaining.items() if candidates[best].get(p, 0 > 0)}
+                remaining.items() if candidates[best].get(p, 0) > 0}
         if not take:
             break
         plan[best] = take
