@@ -35,13 +35,13 @@ async def main():
     err, text = await call(url, "list_products", {})
     assert not err, text
 
-    err, text = await call(url, "get_product", {"product_id": "P-001"})
-    assert not err and "P-001" in text, text
+    err, text = await call(url, "get_product", {"product_id": "HB-LAP-1001"})
+    assert not err and "HB-LAP-1001" in text, text
 
     err, text = await call(url, "get_product", {"product_id": "nope"})
     assert err and "No product" in text, text
 
-    err, text = await call("http://127.0.0.1:9", "list_product", {})
+    err, text = await call("http://127.0.0.1:9", "list_products", {})
     assert err and "unavailable" in text, text
     
     print("MCP manual testing: all four checks are OK")

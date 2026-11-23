@@ -50,6 +50,35 @@ async function change (kind) {
 }
 
 /*
+Fetches all active users and rebuilds the list on screen (admin only).
+*/
+async function refreshUsers () {
+  const users = await call('/admin/users', 'GET');
+  $('users').textContent = '';
+  for (const u of users) {
+    const li = document.createElement('li');
+    li.textContent = u.id + ' : ' + u.username + ' (' + u.role + ', branch ' + u.branch_id + ')';
+    $('users').appendChild(li);
+  }
+}
+
+/*
+Sends the admin form to create a new common user,
+then reloads the list or displays any error message.
+*/
+$('new-user').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    await call('/admin/users', 'POST', { username: $('nu').value, password: $('np').value, branch_id: Number($('nb').value) });
+    $('msg').textContent = '';
+    $('new-user').reset();
+    await refreshUsers();
+  } catch (err) {
+    $('msg').textContent = err.message;
+  }
+});
+
+/*
 Handles form submission without reloading the page:
 logs the user in, displays their info, and, if they are a "common" user,
 populates the product dropdown, reveals the stock dashboard, and loads current stock.
@@ -59,7 +88,12 @@ $('login').addEventListener('submit', async (e) => {
   try {
     me = await call('/login', 'POST', { username: $('u').value, password: $('p').value });
     $('who').textContent = me.username + ' (branch ' + me.branch_id + ')';
-    if (me.role !== 'common') return;
+    $('msg').textContent = '';
+    if (me.role === 'admin') {
+      $('admin-ui').hidden = false;
+      await refreshUsers();
+      return;
+    }
     for (const pr of await call('/products', 'GET')) {
       const o = document.createElement('option');
       o.value = pr.sku;

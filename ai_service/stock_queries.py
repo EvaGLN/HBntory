@@ -29,7 +29,7 @@ def branch_stock(session, branch_name):
     items = [{"product_id": s.product_id, "quantity": s.quantity} for s in
              branch.stock if s.quantity > 0]
 
-    return {"branch": branch.name, "product": sorted(items, key=lambda i:
+    return {"branch": branch.name, "products": sorted(items, key=lambda i:
             i["product_id"])}
 
 

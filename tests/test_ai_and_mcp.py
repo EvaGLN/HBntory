@@ -2,10 +2,10 @@ import asyncio
 import json
 import pytest
 
-from mcp.server.fastmcp.execptions import ToolError
+from mcp.server.fastmcp.exceptions import ToolError
 from sqlalchemy.orm import sessionmaker
 
-import product_mcp_server
+import product_server
 
 from ai_app import create_ai_app
 from models import create_tables, make_engine
@@ -25,17 +25,18 @@ def db(tmp_path):
 
 
 def call_tool(name, args):
-    return asyncio.run(product_mcp_server.mcp.call_tool(name, args))
+    return asyncio.run(product_server.mcp.call_tool(name, args))
 
 
-def test_stock_queires(db):
-    assert where_is_product(db, "P-001") == [
-        {"branch": "Lyon", "quantity": 2, "branch": "Toulouse", "quantity": 10}
+def test_stock_queries(db):
+    assert where_is_product(db, "HB-LAP-1001") == [
+        {"branch": "Lyon", "quantity": 2},
+        {"branch": "Toulouse", "quantity": 10}
     ]
     assert where_is_product(db, "ZZZ") == []
-    assert [p[product_id] for p in branch_stock(db, "Lyon")["products"]] == [
-        "P-001",
-        "P-003",
+    assert [p["product_id"] for p in branch_stock(db, "Lyon")["products"]] == [
+        "HB-KBD-4101",
+        "HB-LAP-1001",
     ]
     assert branch_stock(db, "Nowhere") is None
 
@@ -43,10 +44,10 @@ def test_stock_queires(db):
 @pytest.mark.parametrize(
     "wanted,single,satisfiable",
     [
-        ({"P-001": 3, "P-002": 2}, ["Toulouse"], True),
-        ({"P-001": 12}, [], True),
-        ({"P-002": 3, "P-003": 7}, [], True),
-        ({"P-001": 50}, [], False),
+        ({"HB-LAP-1001": 3, "HB-MON-2101": 2}, ["Toulouse"], True),
+        ({"HB-LAP-1001": 12}, [], True),
+        ({"HB-MON-2101": 3, "HB-KBD-4101": 7}, [], True),
+        ({"HB-LAP-1001": 50}, [], False),
     ],
 )
 def test_shopping_list(db, wanted, single, satisfiable):
@@ -59,7 +60,7 @@ def test_shopping_list(db, wanted, single, satisfiable):
             assert sum(items.get(pid, 0) for items in plan["plan"].values())\
                 == need
     else:
-        assert plan["missing"] == {"P-001": 38}
+        assert plan["missing"] == {"HB-LAP-1001": 38}
 
 
 def test_ask_endpoint():
@@ -94,12 +95,12 @@ def test_ask_endpoint():
 
 
 def test_mcp_tools(product_api_url):
-    product_mcp_server.client = ProductClient(product_api_url)
+    product_server.client = ProductClient(product_api_url)
     assert (
-        json.loads(call_tool("get_product", {"product_id": "P-001"})[0].text)[
+        json.loads(call_tool("get_product", {"product_id": "HB-LAP-1001"})[0].text)[
             "product"
         ]["name"]
-        == "Widget"
+        == "Laptop"
     )
 
     assert len(json.loads(call_tool("list_products", {})[0].text)["products"])\
@@ -108,7 +109,7 @@ def test_mcp_tools(product_api_url):
     with pytest.raises(ToolError, match="No product"):
         call_tool("get_product", {"product_id": "ZZZ"})
 
-    product_mcp_server.client = ProductClient("http://127.0.0.2:9")
+    product_server.client = ProductClient("http://127.0.0.2:9")
 
     with pytest.raises(ToolError, match="unavailable"):
         call_tool("list_products", {})

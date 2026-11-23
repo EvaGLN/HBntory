@@ -4,10 +4,11 @@ Module that create the agent and set its parameters.
 
 import logging
 import os
+import sys
 
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
-from google.adk.tools.mcp_toolset import McpToolset
+from google.adk.tools.mcp_tool.mcp_toolset import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
 from mcp import StdioServerParameters
 from stock_tools import STOCK_TOOLS
@@ -15,13 +16,17 @@ from grounding import SYSTEM_PROMPT, trim_tool_response
 
 log = logging.getLogger("hbntory.agent")
 
+SERVER_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..",
+                           "product_mcp_server", "product_server.py")
+
 product_tools = McpToolset(
     connection_params=StdioConnectionParams(
         server_params=StdioServerParameters(
-            command="python",
-            args=["product_server.py"],
+            command=sys.executable,
+            args=[SERVER_PATH],
             env={"PRODUCT_API_URL":
-                 os.environ.get("PRODUCT_API_URL", "http://localhost:8000")}),
+                 os.environ.get("PRODUCT_API_URL",
+                                "http://localhost:5001/api/v1")}),
         timeout=15,
     ),
 )

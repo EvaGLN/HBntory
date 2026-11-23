@@ -9,6 +9,9 @@ import os
 import sys
 import logging
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                "..", "backoffice"))
+
 from typing import Annotated
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
@@ -20,7 +23,7 @@ log = logging.getLogger("product-mcp")
 mcp = FastMCP("product-server")
 
 client = ProductClient(os.environ.get("PRODUCT_API_URL",
-                       "http://localhost:8000"))
+                       "http://localhost:5001/api/v1"))
 
 DESCRIPTION = "Product identifier as returned by list_products."
 
@@ -33,7 +36,7 @@ def list_products() -> dict:
         return {"products": client.list_products()}
     except ProductApiError as exc:
         log.error(f"list_products failed: {exc}")
-        raise ValueError("The product service is currently invavailable") from\
+        raise ValueError("The product service is currently unavailable") from\
             exc
 
 
@@ -48,7 +51,7 @@ def get_product(product_id: Annotated[str, Field(description=DESCRIPTION)]) \
         raise ValueError(f"No product with id '{product_id}'.") from exc
     except ProductApiError as exc:
         log.error(f"get_product failed: {exc}")
-        raise ValueError("The product service is currently invavailable") from\
+        raise ValueError("The product service is currently unavailable") from\
             exc
 
 

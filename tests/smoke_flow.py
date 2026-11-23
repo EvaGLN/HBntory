@@ -3,7 +3,7 @@ import sys
 import requests
 
 BACKOFFICE = os.environ.get("BACKOFFICE_URL", "http://localhost:5000")
-PRODUCTS = os.environ.get("PRODUCT_API_URL", "http://localhost:8000")
+PRODUCTS = os.environ.get("PRODUCT_API_URL", "http://localhost:5001/api/v1")
 ADMIN_PASSWORD = os.environ["ADMIN_PASSWORD"]
 
 
@@ -27,7 +27,7 @@ check("Admin can list users", s.get(f"{BACKOFFICE}/admin/users").status_code
 check("Admin cannot manage stock", s.get(f"{BACKOFFICE}/branches/1/stock")
       .status_code == 403)
 
-check("Anonymous is rejected", s.get(f"{BACKOFFICE}/admin/users").status_code
-      == 401)
+check("Anonymous is rejected",
+      requests.get(f"{BACKOFFICE}/admin/users").status_code == 401)
 
 print("Flow OK: now test a common user, the MCP server and the client page.")

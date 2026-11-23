@@ -3,6 +3,7 @@ import asyncio
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
+from agent import root_agent
 from grounding import UNAVAILABLE_MESSAGE
 
 APP_NAME = "hbntory"
@@ -19,7 +20,10 @@ async def answer_question_async(question):
                                         session_id=session.id,
                                         new_message=message):
         if event.is_final_response() and event.content and event.content.parts:
-            return event.content.parts[0].text
+            text = "".join(p.text for p in event.content.parts
+                           if p.text and not p.thought)
+            if text.strip():
+                return text.strip()
 
     return UNAVAILABLE_MESSAGE
 

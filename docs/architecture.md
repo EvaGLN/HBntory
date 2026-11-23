@@ -2,7 +2,7 @@
 ## Services
 - **Backoffice** `(Flask, port 5000)`: internal users, stocks and accounts management.
 - **Relational Data Base** `(SQLite and SQLAlchemy)`: users, branches and stocks.
-- **Product API** `(Docker, port 8000, read only)`: products source.
+- **Product API** `(Docker, port 5001, read only)`: products source.
 - **Product MCP Server**: bridge between AI agent and Product API.
 - **AI Query Service** `(Flask, port 5001)`: AI agent which respond to queries.
 - **Web client**: public page (queries + answers).

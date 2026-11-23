@@ -1,13 +1,11 @@
 'use strict';
 
-const API = document.querySelector('meta[name=api')?.content ?? '';
+const API = document.querySelector('meta[name=api]')?.content ?? '';
 const MESSAGES = {
   400: 'Please check your question.',
-  413: 'Your question is' +
-'too long.',
+  413: 'Your question is too long.',
   502: 'The assistant is unavailable, try again later.',
-  504: 'The' +
-'assistant took to long, try again.'
+  504: 'The assistant took too long, try again.'
 };
 const $ = id => document.getElementById(id);
 
@@ -33,7 +31,7 @@ $('f').addEventListener('submit', async (e) => {
     $('status').textContent = '';
     $('answer').focus();
   } catch (err) {
-    $('status').textContent = err.name === 'TimeoutError' ? 'No answer received, try agin.' : err.name === 'TypeError' ? 'Cannot reach the assistant.' : err.message;
+    $('status').textContent = err.name === 'TimeoutError' ? 'No answer received, try again.' : err.name === 'TypeError' ? 'Cannot reach the assistant.' : err.message;
   } finally {
     $('go').disabled = false;
     $('f').removeAttribute('aria-busy');

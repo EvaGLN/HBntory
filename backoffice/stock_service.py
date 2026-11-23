@@ -72,7 +72,7 @@ def add_stock(session, branch_id, product_id, quantity, products):
 
     row.quantity += quantity
     session.commit()
-    
+
     return row.quantity
 
 

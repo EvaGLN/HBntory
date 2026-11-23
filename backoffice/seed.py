@@ -12,8 +12,8 @@ from models import Branch, Stock, User, create_tables, make_engine
 
 # Testing stocks to see if anythings wrong
 SAMPLE_STOCK = [
-    ("Toulouse", "P-001", 10), ("Toulouse", "P-002", 4),
-    ("Lyon", "P-001", 2), ("Lyon", "P-003", 7)
+    ("Toulouse", "HB-LAP-1001", 10), ("Toulouse", "HB-MON-2101", 4),
+    ("Lyon", "HB-LAP-1001", 2), ("Lyon", "HB-KBD-4101", 7)
 ]
 
 

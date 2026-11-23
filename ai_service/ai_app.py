@@ -12,7 +12,7 @@ log = logging.getLogger("hbntory.ai")
 
 def create_ai_app(answer_fn):
     """Create and configure the Flask app with the /ask endpoint."""
-    app = Flask(__name__, static_folder="client_web", static_url_path="")
+    app = Flask(__name__, static_folder="../client_web", static_url_path="")
 
     @app.get("/")
     def index():

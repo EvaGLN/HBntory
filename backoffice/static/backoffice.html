@@ -34,4 +34,19 @@ and view the live branch stock list.
     <ul id="stock"></ul>
 </div>
 
+<!--
+Admin panel, hidden by default until the admin logs in.
+It lets the admin create a common user (username, password, branch id)
+and view the list of existing users.
+-->
+<div id="admin-ui" hidden>
+    <form id="new-user">
+        <input id="nu" placeholder="username" required>
+        <input id="np" type="password" placeholder="password (8+ chars)" required>
+        <input id="nb" type="number" placeholder="branch id" required>
+        <button>Create user</button>
+    </form>
+    <ul id="users"></ul>
+</div>
+
 <script type="text/javascript" src="static/backoffice.js"></script>
