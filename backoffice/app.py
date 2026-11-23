@@ -16,7 +16,7 @@ from products_client import ProductClient
 
 def create_app(database_url, product_client, secret_key):
     """Build and configure the Flask app with its database, clients and routes."""
-    app = Flask(__name__, static_folder="static", static_url_path="/static")
+    app = Flask(__name__, static_folder="../static", static_url_path="/static")
     app.config["SECRET_KEY"] = secret_key
     engine = make_engine(database_url)
     create_tables(engine)
@@ -25,13 +25,19 @@ def create_app(database_url, product_client, secret_key):
     app.teardown_appcontext(close_database)
     for blueprint in (authentication_bp, stock_bp, admin_bp, products_bp):
         app.register_blueprint(blueprint)
+
+    @app.get("/")
+    def index():
+        """Serve the Backoffice page."""
+        return app.send_static_file("backoffice.html")
     return app
+
 
 if __name__ == "__main__":
     application = create_app(
         os.environ.get("DATABASE_URL", "sqlite:///hbntory.db"),
         ProductClient(os.environ.get("PRODUCT_API_URL",
-                                     "http://localhost:8000")),
+                                     "http://localhost:5001/api/v1")),
         os.environ["SECRET_KEY"],
     )
     application.run(port=5000)
