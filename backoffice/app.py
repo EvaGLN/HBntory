@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-""""""
+"""Initialize and run the main HBntory Flask web application."""
 
 import os
 
@@ -15,7 +15,7 @@ from products_client import ProductClient
 
 
 def create_app(database_url, product_client, secret_key):
-    """"""
+    """Build and configure the Flask app with its databse, clients and routes."""
     app = Flask(__name__, static_folder="static", static_url_path="/static")
     app.config["SECRET_KEY"] = secret_key
     engine = make_engine(database_url)
