@@ -85,11 +85,18 @@ populates the product dropdown, reveals the stock dashboard, and loads current s
 */
 $('login').addEventListener('submit', async (e) => {
   e.preventDefault();
+  $('admin-ui').style.visibility = 'hidden';
+  $('stock-ui').style.visibility = 'hidden';
+  $('who').textContent = '';
+  $('users').textContent = '';
+  $('product').textContent = '';
+  $('stock').textContent = '';
   try {
     me = await call('/login', 'POST', { username: $('u').value, password: $('p').value });
     $('who').textContent = me.username + ' (branch ' + me.branch_id + ')';
     $('msg').textContent = '';
     if (me.role === 'admin') {
+      $('stock-ui').style.visibility = "hidden";
       $('admin-ui').style.visibility = "visible";
       await refreshUsers();
       return;
@@ -100,6 +107,7 @@ $('login').addEventListener('submit', async (e) => {
       o.textContent = pr.sku + ' - ' + pr.name;
       $('product').appendChild(o);
     }
+    $('admin-ui').style.visibility = "hidden";
     $('stock-ui').style.visibility = "visible";
     await refresh();
   } catch (err) {

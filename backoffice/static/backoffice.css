@@ -50,6 +50,7 @@ button {
 
 input {
     height: 45px;
+    margin-left: 5px;
 }
 
 #login-div, #stock-ui, #admin-ui {
@@ -70,4 +71,34 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 
 input[type=number] {
     -moz-appearance: textfield;
+}
+
+#admin-ui {
+    flex-direction: column;
+}
+
+#users {
+    list-style: none;
+    text-align: center;
+}
+
+#who, #msg {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#stock-ui {
+    flex-wrap: wrap;
+}
+
+#stock {
+    flex-basis: 100%;
+    list-style: none;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#product {
+    height: 45px;
+    margin-right: 5px;
 }
