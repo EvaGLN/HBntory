@@ -1,0 +1,65 @@
+:root {
+    /* Backgrounds */
+  --bg-primary: #0B1026;
+  --bg-secondary: #151D3B;
+
+  /* Primary colors */
+  --blue: #3155D9;
+  --electric-blue: #477BFF;
+
+  /* Purple colors */
+  --indigo: #5946C7;
+  --purple: #7952D8;
+  --violet: #A78BFA;
+  --lavender: #C4B5FD;
+
+  /* Text */
+  --text-primary: #FFFFFF;
+  --text-secondary: #A5AEC5;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-secondary);
+}
+
+h1 {
+    text-align: center;
+    text-decoration: underline;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+button {
+    background-color: var(--bg-secondary);
+    border-style: solid;
+    border-color: var(--lavender);
+    border-radius: 6px;
+    margin: 5px;
+    color: var(--text-primary);
+    width: 100px;
+    padding: 12px;
+}
+
+input {
+    height: 45px;
+}
+
+label {
+    color: var(--text-primary);
+    margin-right: 10px;
+}
+
+#form-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 40px;
+}
