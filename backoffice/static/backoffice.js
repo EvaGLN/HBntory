@@ -90,7 +90,7 @@ $('login').addEventListener('submit', async (e) => {
     $('who').textContent = me.username + ' (branch ' + me.branch_id + ')';
     $('msg').textContent = '';
     if (me.role === 'admin') {
-      $('admin-ui').hidden = false;
+      $('admin-ui').style.visibility = "visible";
       await refreshUsers();
       return;
     }
@@ -100,7 +100,7 @@ $('login').addEventListener('submit', async (e) => {
       o.textContent = pr.sku + ' - ' + pr.name;
       $('product').appendChild(o);
     }
-    $('stock-ui').hidden = false;
+    $('stock-ui').style.visibility = "visible";
     await refresh();
   } catch (err) {
     $('msg').textContent = err.message;
