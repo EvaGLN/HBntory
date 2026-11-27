@@ -1,1 +1,5 @@
 .venv
+logs/
+hbntory.db
+pycache/
+.pytest_cache
