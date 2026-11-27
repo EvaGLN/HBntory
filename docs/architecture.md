@@ -4,7 +4,7 @@
 - **Relational Data Base** `(SQLite and SQLAlchemy)`: users, branches and stocks.
 - **Product API** `(Docker, port 5001, read only)`: products source.
 - **Product MCP Server**: bridge between AI agent and Product API.
-- **AI Query Service** `(Flask, port 5001)`: AI agent which respond to queries.
+- **AI Query Service** `(Flask, port 5002)`: AI agent which respond to queries.
 - **Web client**: public page (queries + answers).
 
 ## Responsibilities
