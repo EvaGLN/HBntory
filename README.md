@@ -33,8 +33,8 @@ ask questions about products and stock in plain language.
 
 ## Team members
 
-- Eva (GitHub / Holberton: `evagln`)
-- _TODO: add the other team members here (name and GitHub username)._
+- Eva Galiano - [github.com/EvaGLN](https://github.com/EvaGLN)
+- Bryce Vermorel - [github.com/Aurylias](https://github.com/Aurylias)
 
 ## Architecture summary
 
@@ -62,14 +62,18 @@ More detail in [`docs/architecture.md`](docs/architecture.md),
 
 ```
 HBntory/
+├── start.sh             Starts all the services with one command
 ├── backoffice/          Flask app: app.py, models.py, seed.py, routes_*.py,
-│   └── static/          services, authentication, backoffice.html / .js
+│   └── static/          services, authentication; static/ holds
+│                        backoffice.html, .css and .js
 ├── ai_service/          run_ai.py, ai_app.py, answer.py, agent.py,
 │                        grounding.py, stock_tools.py, stock_queries.py
 ├── product_mcp_server/  product_server.py, manual_test_mcp.py
-├── client_web/          index.html, index.js (public page)
+├── client_web/          index.html, index.css, index.js (public page)
 ├── tests/               conftest.py, test_*.py, smoke_*.py
 └── docs/                architecture, decisions, MVP, supported questions, diagrams
+
+(`logs/`, `hbntory.db` and `.venv/` are created when you run the project.)
 ```
 
 ## Setup instructions
@@ -145,7 +149,9 @@ in every new terminal that needs them.
 | `ADMIN_PASSWORD` | seed, `tests/smoke_flow.py` | Password of the `admin` account (8 characters minimum) |
 | `PRODUCT_API_URL` | Backoffice, MCP server, AI service, smoke tests | Default `http://localhost:5001/api/v1` |
 
-Run this block from the `HBntory` folder in every terminal that needs it:
+`./start.sh` sets these variables for you (see the next section). For a manual
+start, run this block from the `HBntory` folder in every terminal that needs
+them:
 
 ```bash
 export DATABASE_URL="sqlite:///$(pwd)/hbntory.db"
@@ -162,8 +168,52 @@ Backoffice (started in `backoffice/`) and the AI service (started in
 
 ## How to run each service
 
-Start the services in this order. Each one keeps its terminal busy, so open a
-new terminal for the next one.
+### Quick start: one command (`start.sh`)
+
+Once the setup above is done (virtual environment created, Docker Desktop
+started, Ollama and `qwen3:8b` installed), one script starts everything:
+
+```bash
+cd HBntory
+chmod +x start.sh      # once
+./start.sh
+```
+
+The script activates the virtual environment itself, so you do not need to do
+it first. It then:
+
+1. starts the **Products API** with `docker compose up -d --build` and waits
+   until `/health` answers;
+2. runs the **seed** (safe to repeat) and starts the **Backoffice**;
+3. starts **Ollama** and checks that `qwen3:8b` is installed;
+4. starts the **AI Query Service**.
+
+It waits for each service to answer before starting the next one, then prints
+the URLs to open. **Ctrl+C stops everything** it started, including the Docker
+container (`docker compose down`).
+
+| Detail | Behaviour |
+|---|---|
+| Products API folder | Expected next to HBntory (`../hbntory-products-api`). Otherwise: `PRODUCTS_API_DIR=/path/to/hbntory-products-api ./start.sh` |
+| Service already running | The Products API and Ollama are left untouched (and not stopped) if they already answer |
+| Logs | One file per service in `logs/` (`backoffice.log`, `ai_service.log`, `products_api.log`, `ollama.log`, `seed.log`). Read them when the script reports an error |
+| Variables | `DATABASE_URL` (absolute path), `SECRET_KEY`, `ADMIN_PASSWORD` (default `adminpass1`) and `PRODUCT_API_URL` have defaults. Override them: `ADMIN_PASSWORD=... SECRET_KEY=... ./start.sh` |
+| Tests | Not started by the script: run them in another terminal (see [How to run the tests](#how-to-run-the-tests)) |
+
+If Docker is not usable (`docker` not found in WSL), start the Products API
+with Python in its own terminal, then run `./start.sh`: it detects the API on
+port 5001 and skips Docker.
+
+```bash
+cd hbntory-products-api
+HBN_PRODUCTS_PORT=5001 python3 app.py
+```
+
+### Manual start (one terminal per service)
+
+Use this method if `start.sh` does not work or to see the logs live. Start the
+services in this order. Each one keeps its terminal busy, so open a new
+terminal for the next one.
 
 | Terminal | Service | Folder |
 |---|---|---|
@@ -173,7 +223,7 @@ new terminal for the next one.
 | 4 | AI Query Service | `HBntory/ai_service` |
 | 5 | Tests and smoke scripts | `HBntory` |
 
-### Terminal 1 - Products API (Docker)
+#### Terminal 1 - Products API (Docker)
 
 This is the external service provided with the project, in its own folder
 (`hbntory-products-api`), not in HBntory.
@@ -191,7 +241,7 @@ curl http://localhost:5001/health
 curl "http://localhost:5001/api/v1/products?limit=2"     # JSON with a "results" key
 ```
 
-### Terminal 2 - Backoffice (port 5000)
+#### Terminal 2 - Backoffice (port 5000)
 
 Initialize the database first (see the next section), then:
 
@@ -207,7 +257,7 @@ python app.py
 
 The Backoffice answers on `http://localhost:5000/`.
 
-### Terminal 3 - Ollama
+#### Terminal 3 - Ollama
 
 Only if the Ollama server is not already running:
 
@@ -215,7 +265,7 @@ Only if the Ollama server is not already running:
 ollama serve
 ```
 
-### Terminal 4 - AI Query Service (port 5002)
+#### Terminal 4 - AI Query Service (port 5002)
 
 ```bash
 cd HBntory
@@ -269,7 +319,12 @@ Open **http://localhost:5000/**.
 2. **Common user (branch staff).** Log in with the account you created, for
    example `alice` with branch `1`. The page shows the products of the API in a
    list, a quantity field, **Add** and **Remove** buttons and the stock of the
-   user's branch. A common user can only act on their own branch.
+   user's branch. A common user can only act on their own branch. The quantity
+   must be a whole number of 1 or more: the server refuses 0 and negative
+   values and the page displays the error.
+
+You can log in again with another account without reloading the page: the
+panels, product list and stock list are reset at each login.
 
 If you see `invalid credentials`, check the username and password. The
 message disappears after a successful login.
@@ -345,7 +400,8 @@ and internal steps. In the code:
 - `ai_service/answer.py` must **not** return `parts[0].text` of the final
   event: the first part is often the reasoning. It keeps only the parts that
   Google ADK does not flag as reasoning (`part.thought`), joins them, and
-  falls back to `UNAVAILABLE_MESSAGE` if nothing is left.
+  falls back to `UNAVAILABLE_MESSAGE` if nothing is left. Do not go back to
+  `parts[0]` when editing this file.
 - If reasoning still shows up, add `/no_think` at the end of `SYSTEM_PROMPT`
   in `ai_service/grounding.py` (Qwen3 switch that turns thinking off).
 - When you change the model or the library versions, **read real answers**
@@ -444,9 +500,13 @@ answers** it prints, especially for the reasoning leak above.
 - **Stock list shows SKUs only,** not product names.
 - **Dependency on the Products API:** if it is down, adding stock and listing
   products fail with `502`, and the AI cannot give product details.
-- **Everything is started by hand** (several terminals) and there is no
-  `requirements.txt`: dependencies are installed with the `pip install`
-  command above.
+- **Start-up is a script, not a container setup.** `start.sh` (Linux / WSL,
+  needs `curl`) starts the services as background processes. There is no
+  Docker Compose file for the whole project and no `requirements.txt`:
+  dependencies are installed with the `pip install` command above, and Docker
+  Desktop, Ollama and the `qwen3:8b` model must be installed beforehand.
+- **Default secrets in `start.sh`** (`SECRET_KEY`, `ADMIN_PASSWORD`) are only
+  fine for a demo: override them for any other use.
 - **Not covered by automated tests:** the real language model (checked by
   reading `smoke_questions.py` output) and the behaviour of the pages in a
   browser.
@@ -460,6 +520,10 @@ Beyond the minimum, the project contains:
 - Automated tests with a fake Products API (`tests/conftest.py`), runnable
   without Docker or Ollama.
 - A user-management panel for the admin in the Backoffice page.
+- `start.sh`: one command that starts the Products API, the Backoffice, Ollama
+  and the AI Query Service, waits for each one, and stops them all on Ctrl+C.
+- A dark CSS theme for the Backoffice (`backoffice/static/backoffice.css`) and
+  the client web page (`client_web/index.css`).
 
 Not implemented (listed as "if we have time" in [`docs/mvp.md`](docs/mvp.md)):
 Docker Compose for the whole project and rate limiting.
